@@ -9,7 +9,7 @@ from pyglet.window import key
 from pyglet import shapes
 
 # Application Specific
-# (place holder)
+import Link
 
 # Setup for limiting the window size, adding icons, and adding an FPS display
 window = pyglet.window.Window(900, 700, caption='Simulation of Pendulum', resizable=True, )
@@ -48,13 +48,8 @@ def center_image(image):
 main_batch = pyglet.graphics.Batch()
 
 # Objects to be batched. These create the pendulum seen on the screen
-circle = shapes.Circle(x=0, y=0, radius=25, color=(225, 225, 225), batch=main_batch)
-circleTwo = shapes.Circle(x=0, y=0, radius=25, color=(225, 225, 225), batch=main_batch)
-rectangle = shapes.Rectangle(x=0, y=0, width=30, height=200, color=(225, 225, 225), batch=main_batch)
-
-# This allows the rectangle to be easily pivoted by the center of its top side
-rectangle._anchor_x = rectangle.width/2
-rectangle._anchor_y = rectangle.height
+link = Link.Link(x=window.get_size()[0] / 2, y=window.get_size()[1] * 5 / 8,
+                 length=200, color1=(225, 225, 225), color2=(100, 100, 100), color3=(140, 140, 140), batch=main_batch)
 
 # Function Constants
 g = 9.81
@@ -77,18 +72,9 @@ def update(dt):
     thetaVal = thetaVal + thetaVald * dt
     print(thetaVal)
 
-    # Update where the hinge is located with reference to window size
-    circle.x = window.get_size()[0] / 2
-    circle.y = window.get_size()[1] * 5 / 8
-
-    # Update where the arm is located with reference to window size and pendulum angle
-    rectangle.x = window.get_size()[0] / 2
-    rectangle.y = window.get_size()[1] * 5 / 8
-    rectangle.rotation = thetaVal * 180 / math.pi
-
-    # Update where the point mass is located with reference to window size and pendulum angle
-    circleTwo.x = window.get_size()[0] / 2 - math.sin(thetaVal) * 200
-    circleTwo.y = window.get_size()[1] * 5 / 8 - math.cos(thetaVal) * 200
+    link.x = window.get_size()[0] / 2
+    link.y = window.get_size()[1] * 5 / 8
+    link.rotation = thetaVal * 180 / math.pi
 
 
 # Cause the clock update. This is what limits the precious of the simulation (step is is ~1/60)
