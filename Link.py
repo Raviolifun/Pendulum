@@ -108,3 +108,20 @@ class Link:
     def y(self, value):
         self._y = value
         self._update_position()
+
+    @property
+    def x2(self):
+        """X coordinate of the shape.
+
+        :type: int or float
+        """
+        return self._x + math.sin(self._rotation * math.pi / 180) * self._length
+
+    @property
+    def y2(self):
+        """Y coordinate of the shape.
+
+        :type: int or float
+        """
+        return self._y - math.cos(self._rotation * math.pi / 180) * self._length
+

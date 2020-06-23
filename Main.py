@@ -10,6 +10,7 @@ from pyglet import shapes
 
 # Application Specific
 import Link
+import MotionFade
 
 # Setup for limiting the window size, adding icons, and adding an FPS display
 window = pyglet.window.Window(900, 700, caption='Simulation of Pendulum', resizable=True, )
@@ -44,19 +45,24 @@ def center_image(image):
     image.anchor_y = image.height // 2
 
 
+# For size adjustment
+pixelsPerMeter = 100
+
 # Batch of all objects (renders them in one go)
 main_batch = pyglet.graphics.Batch()
 
 # Objects to be batched. These create the pendulum seen on the screen
+motionFade = MotionFade.MotionFade(x=window.get_size()[0] / 2, y=window.get_size()[1] * 5 / 8 - 200,
+                 width=35, size=20, color1=(0, 225, 255), batch=main_batch)
 link = Link.Link(x=window.get_size()[0] / 2, y=window.get_size()[1] * 5 / 8,
                  length=200, color1=(225, 225, 225), color2=(100, 100, 100), color3=(140, 140, 140), batch=main_batch)
 
 # Function Constants
 g = 9.81
-r = 10
+r = 2
 
 # Initialisation Constants
-thetaVal = 2
+thetaVal = 3
 thetaVald = 0
 thetaValdd = 1.5
 
@@ -70,15 +76,16 @@ def update(dt):
     thetaValdd = - g / r * math.sin(thetaVal)
     thetaVald = thetaVald + thetaValdd * dt
     thetaVal = thetaVal + thetaVald * dt
-    print(thetaVal)
 
     link.x = window.get_size()[0] / 2
     link.y = window.get_size()[1] * 5 / 8
     link.rotation = thetaVal * 180 / math.pi
 
+    motionFade.pos = [link.x2, link.y2]
 
-# Cause the clock update. This is what limits the precious of the simulation (step is is ~1/60)
-pyglet.clock.schedule_interval(update, 1/60.0)
+
+# Cause the clock update. This is what limits the precision of the simulation (step is is ~1/60)
+pyglet.clock.schedule_interval(update, 1/120.0)
 
 # Creates the window
 pyglet.app.run()
