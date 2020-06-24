@@ -11,6 +11,7 @@ from pyglet import shapes
 # Application Specific
 import Link
 import MotionFade
+import Graph
 
 # Setup for limiting the window size, adding icons, and adding an FPS display
 window = pyglet.window.Window(900, 700, caption='Simulation of Pendulum', resizable=True, )
@@ -52,28 +53,32 @@ pixelsPerMeter = 100
 main_batch = pyglet.graphics.Batch()
 
 # Objects to be batched. These create the pendulum seen on the screen
-motionFade = MotionFade.MotionFade(x=window.get_size()[0] / 2, y=window.get_size()[1] * 5 / 8 - 200,
-                 width=35, size=20, color1=(0, 225, 255), batch=main_batch)
-link = Link.Link(x=window.get_size()[0] / 2, y=window.get_size()[1] * 5 / 8,
-                 length=200, color1=(225, 225, 225), color2=(100, 100, 100), color3=(140, 140, 140), batch=main_batch)
+motionFade = MotionFade.MotionFade(x=window.get_size()[0] / 2, y=window.get_size()[1] * 5 / 8 - 200, width=35, size=20,
+                                   color1=(40, 105, 215), batch=main_batch)
+link = Link.Link(x=window.get_size()[0] / 2, y=window.get_size()[1] * 5 / 8, length=200, color1=(225, 225, 225),
+                 color2=(100, 100, 100), color3=(140, 140, 140), batch=main_batch)
+graph = Graph.MovingGraph(x=100, y=10, width=200, height=100, colors=((0, 0, 255), (0, 255, 0)), batch=main_batch)
 
 # Function Constants
 g = 9.81
-r = 2
+r = 1
 
 # Initialisation Constants
-thetaVal = 3
+thetaVal = 2 + math.pi*2
 thetaVald = 0
 thetaValdd = 1.5
+time = 0
 
 
 def update(dt):
     # The Dynamic System: x'' * r - g * sin(x) = 0
 
     # Force these to be global rather than local
-    global thetaVal, thetaVald, thetaValdd
+    global thetaVal, thetaVald, thetaValdd, time
 
     thetaValdd = - g / r * math.sin(thetaVal)
+    # the simple model
+    # thetaValdd = - g / r * thetaVal
     thetaVald = thetaVald + thetaValdd * dt
     thetaVal = thetaVal + thetaVald * dt
 
@@ -81,11 +86,16 @@ def update(dt):
     link.y = window.get_size()[1] * 5 / 8
     link.rotation = thetaVal * 180 / math.pi
 
+    # Add a motion Fade to the end of the linkage
     motionFade.pos = [link.x2, link.y2]
+
+    # Give graph information, bottom right corner
+    graph.update_graph(time, thetaVal)
+    time += dt
 
 
 # Cause the clock update. This is what limits the precision of the simulation (step is is ~1/60)
-pyglet.clock.schedule_interval(update, 1/120.0)
+pyglet.clock.schedule_interval(update, 1/60.0)
 
 # Creates the window
 pyglet.app.run()

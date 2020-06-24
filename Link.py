@@ -9,36 +9,44 @@ from pyglet import shapes
 
 
 class Link:
-    def __init__(self, x, y, length, color1=(255, 255, 255), color2=(200, 200, 200), color3=(200, 200, 200), batch=None, group=None):
+    def __init__(self, x, y, length, width=0, color1=(255, 255, 255), color2=(200, 200, 200), color3=(200, 200, 200),
+                 batch=None, group=None):
         # (x, y) describes the position of the fixed circle
         self._x = x
         self._y = y
         # length describes the length from center to center
         self._length = length
+        # Auto scale width with length unless specified
+        if width == 0:
+            self._width = length/10.0
+            width = self._width
+        else:
+            self._width = width
+
         # Counterclockwise angle from negative vertical (degrees)
         self._rotation = 0
 
         # Outline shapes
         # Set up rectangle in center
-        self.rectangle = shapes.Rectangle(x=x-length/20, y=y, width=length/10, height=length,
+        self.rectangle = shapes.Rectangle(x=x-width/2, y=y, width=width, height=length,
                                           color=color1, batch=batch, group=group)
         # Anchor rectangle to top middle (allows for rotation about a convenient point)
         self.rectangle._anchor_x = self.rectangle.width / 2
         self.rectangle._anchor_y = self.rectangle.height
         # Set up circles at tips
-        self.circleOne = shapes.Circle(x=x, y=y, radius=length/10, color=color1, batch=batch, group=group)
-        self.circleTwo = shapes.Circle(x=x, y=y+length, radius=length/10, color=color1, batch=batch, group=group)
+        self.circleOne = shapes.Circle(x=x, y=y, radius=width/1.1, color=color1, batch=batch, group=group)
+        self.circleTwo = shapes.Circle(x=x, y=y+length, radius=width/1.1, color=color1, batch=batch, group=group)
 
         # Inner shapes
         # Set up rectangle in center
-        self.rectangleIn = shapes.Rectangle(x=x-length/32, y=y, width=length/16, height=length,
+        self.rectangleIn = shapes.Rectangle(x=x-width*0.3125, y=y, width=width*0.625, height=length,
                                             color=color3, batch=batch, group=group)
         # Anchor rectangle to top middle (allows for rotation about a convenient point)
         self.rectangleIn._anchor_x = self.rectangleIn.width / 2
         self.rectangleIn._anchor_y = self.rectangleIn.height
         # Set up circles at tips
-        self.circleOneIn = shapes.Circle(x=x, y=y, radius=length/12, color=color2, batch=batch, group=group)
-        self.circleTwoIn = shapes.Circle(x=x, y=y+length, radius=length/12, color=color2, batch=batch, group=group)
+        self.circleOneIn = shapes.Circle(x=x, y=y, radius=width*0.833/1.1, color=color2, batch=batch, group=group)
+        self.circleTwoIn = shapes.Circle(x=x, y=y+length, radius=width*0.833/1.1, color=color2, batch=batch, group=group)
 
     def _update_position(self):
         # Updates position of outer

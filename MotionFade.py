@@ -1,5 +1,5 @@
 # Standard
-import math
+# (Place Holder)
 
 # Libraries
 from pyglet import shapes
@@ -28,14 +28,14 @@ class MotionFade:
             self._particles[i] = shapes.Circle(x=x, y=y, radius=width/2, color=color1, batch=batch, group=group)
 
     def _update_position(self):
+        # Move the last particle to the front
         self._particles.insert(0, self._particles.pop(self._size - 1))
-        # Move leading circle
+        # Move leading circle to desired point
         self._particles[0].x = self._pos[0]
         self._particles[0].y = self._pos[1]
+        # Change opacity of each circle for fading effect
         for i in range(self._size):
             particle = self._particles[i]
-            # 0 - 255
-            # particle.opacity = i * 255.0 / (self._size - 1)
             particle.opacity = (self._size - 1 - i) * 255.0 / (self._size - 1)
 
     @property
