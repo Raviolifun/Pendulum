@@ -93,11 +93,10 @@ class MovingGraph:
         dx = (x - self._xPast) * self._xScale
 
         if (x * self._xScale) / self._insideWidth > 1:
-            # bug*** removes points form wrong side
-            self._points.insert(0, self._points.pop(self._n - 1))
+            self._points.insert(self._n - 1, self._points.pop(0))
             for j in range(len(self._colors)):
-                self._points[0][j].x = self._x + self._width - self._borderWidth
-                self._points[0][j].y = y
+                self._points[self._n - 1][j].x = self._x + self._width - self._borderWidth
+                self._points[self._n - 1][j].y = y
             for i in range(self._n):
                 for j in range(len(self._colors)):
                     self._points[i][j].x = self._points[i][j].x - dx
