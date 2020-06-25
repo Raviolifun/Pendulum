@@ -61,11 +61,11 @@ graph = Graph.MovingGraph(x=100, y=10, width=200, height=100, colors=((0, 0, 255
 
 # Function Constants
 g = 9.81
-r = 1
+r = 4
 
 # Initialisation Constants
-thetaVal = 2 + math.pi*2
-thetaVald = 0
+thetaVal = 3.1415 + math.pi*2
+thetaVald = 1
 thetaValdd = 1.5
 time = 0
 
@@ -76,11 +76,29 @@ def update(dt):
     # Force these to be global rather than local
     global thetaVal, thetaVald, thetaValdd, time
 
+    # Internal simulation loop for more accurate performance
+
+    dtT = dt
+    dtF = 1/500
+    while dtT > dtF:
+        thetaValdd = - g / r * math.sin(thetaVal)
+        # the simple model
+        # thetaValdd = - g / r * thetaVal
+        thetaVald = thetaVald + thetaValdd * dtF
+        thetaVal = thetaVal + thetaVald * dtF
+        dtT = dtT - dtF
+        # Give graph information, bottom right corner
+        #graph.update_graph(time, thetaVal)
+        time += dtF
+
     thetaValdd = - g / r * math.sin(thetaVal)
     # the simple model
     # thetaValdd = - g / r * thetaVal
-    thetaVald = thetaVald + thetaValdd * dt
-    thetaVal = thetaVal + thetaVald * dt
+    thetaVald = thetaVald + thetaValdd * dtT
+    thetaVal = thetaVal + thetaVald * dtT
+    # Give graph information, bottom right corner
+    graph.update_graph(time, (thetaVal + math.pi) % (2 * math.pi) + 2 * math.pi)
+    time += dt
 
     link.x = window.get_size()[0] / 2
     link.y = window.get_size()[1] * 5 / 8
@@ -89,9 +107,7 @@ def update(dt):
     # Add a motion Fade to the end of the linkage
     motionFade.pos = [link.x2, link.y2]
 
-    # Give graph information, bottom right corner
-    graph.update_graph(time, thetaVal)
-    time += dt
+
 
 
 # Cause the clock update. This is what limits the precision of the simulation (step is is ~1/60)

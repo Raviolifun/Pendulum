@@ -74,39 +74,48 @@ class MovingGraph:
         # Doing this with circles. The code would be faster if individual points were used
         self._points = [[]]
         for j in range(len(colors)):
-            self._points[0].append(shapes.Circle(x=self._x + self._width - self._borderWidth, y=y, segments=10,
-                                                 radius=1, color=colors[j], batch=batch, group=group))
+            self._points[0].append(shapes.Circle(x=self._x + self._width - self._borderWidth, y=y, segments=4,
+                                                 radius=4, color=colors[j], batch=batch, group=group))
 
     def update_graph(self, x, y):
         # Given new position data, update list
-        y = y * self._yScale
 
-        # Where I will implement auto y resize
-        if (1==1):
+        # Auto y resize
+        if y * self._yScale > self._y + self._height - self._borderWidth:
+            self._yMax = y
+        elif y * self._yScale < self._y + self._borderWidth:
+            self._yMin = y
+        else:
             a = 1
-
-        edge = self._x + self._borderWidth + self._insideWidth - x
-
-        # This introduces numerical errors over long periods of time, may want to look into this
-        # Sequential truncation/rounding errors
+            #self._points[self._n - 1][j].y = y * self._yScale
 
         dx = (x - self._xPast) * self._xScale
 
-        if (x * self._xScale) / self._insideWidth > 1:
+        # if x pos is less than back edge
+        # remove point
+        # if x pos is equal to or greater than back edge
+        # add point
+
+        if self._points[0][0].x < self._x + self._borderWidth:
+            # If there are too many points lengthwise
+            self._points.pop(0)
+            self._n = self._n - 1
+
+            # Shift all the points over by dx and move point from back to front
             self._points.insert(self._n - 1, self._points.pop(0))
             for j in range(len(self._colors)):
                 self._points[self._n - 1][j].x = self._x + self._width - self._borderWidth
-                self._points[self._n - 1][j].y = y
+                self._points[self._n - 1][j].y = y * self._yScale
             for i in range(self._n):
                 for j in range(len(self._colors)):
                     self._points[i][j].x = self._points[i][j].x - dx
         else:
-            # Add points until no more fit lengthwise
+            # If there are not enough points lengthwise
             self._points.append([])
             for j in range(len(self._colors)):
-                self._points[self._n].append(shapes.Circle(x=self._x + self._width - self._borderWidth, y=y,
-                                                           segments=10, radius=2, color=self._colors[j],
-                                                           batch=self._batch, group=self._group))
+                self._points[self._n].append(shapes.Circle(x=self._x + self._width - self._borderWidth,
+                                                           y=y * self._yScale, segments=4, radius=4,
+                                                           color=self._colors[j], batch=self._batch, group=self._group))
             self._n = self._n + 1
             # Shift all the points over by dx
             for i in range(self._n):
