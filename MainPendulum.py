@@ -16,7 +16,7 @@ import Graph
 # Setup for limiting the window size, adding icons, and adding an FPS display
 window = pyglet.window.Window(900, 700, caption='Simulation of Pendulum', resizable=True, )
 window.set_minimum_size(320, 200)
-window.set_maximum_size(1024, 768)
+window.set_maximum_size(1920, 1080)
 icon1 = pyglet.image.load('.\\resources\\Bee.png')
 icon2 = pyglet.image.load('.\\resources\\Bee32.png')
 window.set_icon(icon1, icon2)
@@ -28,7 +28,7 @@ fps_display = pyglet.window.FPSDisplay(window=window)
 def on_draw():
     window.clear()
     main_batch.draw()
-    fps_display.draw()
+    # fps_display.draw()
 
 
 # Key event example to move window
@@ -64,8 +64,8 @@ g = 9.81
 r = 4
 
 # Initialisation Constants
-thetaVal = 3.1415 + math.pi*2
-thetaVald = 1
+thetaVal = 3.1 + math.pi*2
+thetaVald = 0
 thetaValdd = 1.5
 time = 0
 
@@ -97,7 +97,8 @@ def update(dt):
     thetaVald = thetaVald + thetaValdd * dtT
     thetaVal = thetaVal + thetaVald * dtT
     # Give graph information, bottom right corner
-    graph.update_graph(time, (thetaVal + math.pi) % (2 * math.pi) + 2 * math.pi)
+    # graph.update_graph(time, (thetaVal + math.pi) % (2 * math.pi) + 2 * math.pi)
+    graph.update_graph(time, thetaVald + 4)
     time += dt
 
     link.x = window.get_size()[0] / 2

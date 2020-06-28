@@ -59,6 +59,8 @@ class Link:
         # Rotate rectangle
         self.rectangle.x = self._x
         self.rectangle.y = self._y
+        self.rectangle.height = self._length
+        self.rectangle._anchor_y = self.rectangle.height
         self.rectangle.rotation = -self._rotation
 
         # Updates position of inner
@@ -71,6 +73,8 @@ class Link:
         # Rotate rectangle
         self.rectangleIn.x = self._x
         self.rectangleIn.y = self._y
+        self.rectangleIn.height = self._length
+        self.rectangleIn._anchor_y = self.rectangleIn.height
         self.rectangleIn.rotation = -self._rotation
 
     @property

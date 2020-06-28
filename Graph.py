@@ -57,6 +57,7 @@ class MovingGraph:
         self._batch = batch
         self._group = group
 
+        """
         # Boarder
         self._rectangleBorder = shapes.Rectangle(x=x, y=y, width=width, height=height, color=(100, 100, 100),
                                                  batch=batch, group=group)
@@ -70,6 +71,7 @@ class MovingGraph:
         # y-Axis
         self._yAxis = shapes.Line(x=x + self._borderWidth + 5, y=y + self._borderWidth, x2=x + self._borderWidth + 5,
                                   y2=y + self._borderWidth + self._insideHeight, color=(0, 0, 0), batch=batch, group=group)
+                                  """
         # inputPoints
         # Doing this with circles. The code would be faster if individual points were used
         self._points = [[]]
