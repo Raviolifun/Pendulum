@@ -24,7 +24,7 @@ window.set_icon(icon1, icon2)
 fps_display = pyglet.window.FPSDisplay(window=window)
 
 # For size adjustment
-pixelsPerMeter = 100
+pixelsPerMeter = 10
 xPos = window.get_size()[0] / 2
 yPos = window.get_size()[1] / 2
 
@@ -66,11 +66,11 @@ graph = Graph.MovingGraph(x=100, y=10, width=200, height=100, colors=((0, 0, 255
 
 # Function Constants
 g = 9.81
-l0 = 2
-m = 1
-k = 1000
+l0 = 10
+m = 0.1
+k = 1000000
 p = 1.225
-A = 1
+A = 0.01
 cd = 0.47
 
 # Initialisation Constants
@@ -87,9 +87,9 @@ vxf = 0
 vyf = 0
 
 vx = 0
-vy = -10
+vy = 0
 ax = 0
-ay = -10
+ay = 0
 vxr = 0
 vyr = 0
 time = 0

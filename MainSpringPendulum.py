@@ -61,8 +61,8 @@ graph = Graph.MovingGraph(x=100, y=10, width=200, height=100, colors=((0, 0, 255
 
 # Function Constants
 g = 9.81
-l0 = 3
-m = 2
+l0 = 2
+m = 2.5
 k = 100
 
 # Initialisation Constants
