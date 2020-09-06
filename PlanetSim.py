@@ -2,6 +2,9 @@
 
 # Standard
 import math
+import random
+import numpy as np
+import time
 
 # Libraries
 import pyglet
@@ -28,6 +31,12 @@ fps_display = pyglet.window.FPSDisplay(window=window)
 pixelsPerMeter = 10
 xPos = window.get_size()[0] / 2
 yPos = window.get_size()[1] / 2
+x1, y1, x2, y2 = 0, 0, 0, 0
+planetMassE = 7
+
+# For code timing
+# tOne = time.perf_counter()
+# tTwo = time.perf_counter()
 
 # Required for updating the screen
 @window.event
@@ -37,13 +46,29 @@ def on_draw():
     # fps_display.draw()
 
 
-# Moving the link
+@window.event
+def on_mouse_press(x, y, button, modifiers):
+    global x1, y1
+    x1 = x
+    y1 = y
+
+
+@window.event
+def on_mouse_release(x, y, button, modifiers):
+    global planets, x1, y1, x2, y2
+    planets = np.append(planets, Planet.Planet(x, y, (x2 - x1), (y2 - y1), 10000000*(10**planetMassE), batch=main_batch))
+
+
 @window.event
 def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-    global xPos, yPos
-    if buttons & mouse.LEFT & (((-link.x + x)**2 + (-link.y + y)**2)**0.5 < 500):
-        xPos = x
-        yPos = y
+    global x2, y2
+    x2 = x
+    y2 = y
+
+@window.event
+def on_mouse_scroll(x, y, scroll_x, scroll_y):
+    global planetMassE
+    planetMassE = planetMassE + scroll_y
 
 
 # Function for centering objects
@@ -59,52 +84,73 @@ main_batch = pyglet.graphics.Batch()
 # Objects to be batched. These create the pendulum seen on the screen
 
 # x0, y0, vx0, vy0, mass
-planet1 = Planet.Planet(window.get_size()[0] / 2,      window.get_size()[1] / 2, 0, 0, 6*(10**17),
-                        batch=main_batch)
-planet2 = Planet.Planet(window.get_size()[0] / 2 + 20, window.get_size()[1] / 2, 1, 0, 6*(10**17),
-                        batch=main_batch)
-planet3 = Planet.Planet(window.get_size()[0] / 2 - 200, window.get_size()[1] / 2, 0, -130, 6*(10**17),
-                        batch=main_batch)
-planet4 = Planet.Planet(window.get_size()[0] / 2, window.get_size()[1] / 2 + 240, -120, 0, 6*(10**17),
-                        batch=main_batch)
-planet5 = Planet.Planet(window.get_size()[0] / 2, window.get_size()[1] / 2 - 300, 110, 0, 6*(10**17),
-                        batch=main_batch)
-planet6 = Planet.Planet(window.get_size()[0] / 2, window.get_size()[1] / 2 - 400, 110, 0, 6*(10**17),
-                        batch=main_batch)
-planet7 = Planet.Planet(window.get_size()[0] / 2, window.get_size()[1] / 2 - 500, 110, 0, 6*(10**17),
-                        batch=main_batch)
-planet8 = Planet.Planet(window.get_size()[0] / 2, window.get_size()[1] / 2 - 600, 110, 0, 6*(10**17),
-                        batch=main_batch)
 
-planets = [planet1, planet2, planet3, planet4, planet5, planet6, planet7, planet8]
+planets = [None] * 40
+
+for val in range(40):
+    planets[val] = Planet.Planet(random.uniform(1, 2000), random.uniform(1, 1000),
+                                 1 - random.uniform(1, 2), 1 - random.uniform(1, 2),
+                                 random.uniform(1, 1000000)*(10**10), batch=main_batch)
+
+
+# planet1 = Planet.Planet(window.get_size()[0] / 2,      window.get_size()[1] / 2, 0, 0, 6*(10**15),
+#                        batch=main_batch)
+# planet2 = Planet.Planet(window.get_size()[0] / 2 + 200, window.get_size()[1] / 2, 0, 0, 6*(10**15),
+#                        batch=main_batch)
+
 # planets = [planet1, planet2]
 
 def update(dt):
-    for planet in planets:
-        planet.updateGravAccel(planets)
+
 
     dT = dt
-    dtf = 1/100.0
+    dtf = 1/60
     while dT > dtf:
         for planet in planets:
+            planet.updateGravAccel(planets)
+
+        for planet in planets:
             planet.updatePosition(dtf)
+
         dT = dT - dtf
-    for planet in planets:
-        planet.updatePosition(dT)
 
     for planet in planets:
+        planet.updateGravAccel(planets)
+    for planet in planets:
+        planet.updatePosition(dT)
+        planet.updateAnimation()
+
+    """
+    for planet in planets:
         if planet.x < 0:
-            planet.vx = - planet.vx/100
+            planet.vx = - planet.vx
             planet.x = 0
-        if planet.x > window.get_size()[0]:
-            planet.vx = - planet.vx / 100
+        elif planet.x > window.get_size()[0]:
+            planet.vx = - planet.vx
             planet.x = window.get_size()[0]
-        if planet.y < 0:
-            planet.vy = - planet.vy/100
+        elif planet.y < 0:
+            planet.vy = - planet.vy
             planet.y = 0
-        if planet.y > window.get_size()[1]:
-            planet.vy = - planet.vy / 100
+        elif planet.y > window.get_size()[1]:
+            planet.vy = - planet.vy
             planet.y = window.get_size()[1]
+    """
+
+    """
+    dampFact = 1
+    for planet in planets:
+        if planet.x < 0:
+            planet.vx = planet.vx / dampFact
+            planet.x = window.get_size()[0]
+        elif planet.x > window.get_size()[0]:
+            planet.vx = planet.vx / dampFact
+            planet.x = 0
+        elif planet.y < 0:
+            planet.vy = planet.vy / dampFact
+            planet.y = window.get_size()[1]
+        elif planet.y > window.get_size()[1]:
+            planet.vy = planet.vy / dampFact
+            planet.y = 0"""
 
 
 # Cause the clock update. This is what limits the precision of the simulation (step is is ~1/60)

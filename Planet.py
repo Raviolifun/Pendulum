@@ -1,10 +1,12 @@
 # Planet
 
+import time
+
 from pyglet import shapes
 
 class Planet:
 
-    def __init__(self, x0, y0, vx0, vy0, mass, dispRad=10, color1=(255, 255, 255), batch=None, group=None):
+    def __init__(self, x0, y0, vx0, vy0, mass, dispRad=5, color1=(255, 255, 255), batch=None, group=None):
         # Simulation Parameters
         self._x = x0
         self._y = y0
@@ -20,9 +22,13 @@ class Planet:
         self._batch = batch
         self._group = group
 
-        self.circleOne = shapes.Circle(x=x0, y=y0, radius=dispRad, color=color1, batch=batch, group=group)
+        self.circleOne = shapes.Circle(x=x0, y=y0, radius=dispRad, segments=8, color=color1, batch=batch, group=group)
 
     def updateGravAccel(self, planets):
+
+        # For code timing
+        # tOne = time.perf_counter()
+        # tTwo = time.perf_counter()
 
         G = 6.67 * 10 ** -11
 
@@ -30,32 +36,31 @@ class Planet:
         ayMag = 0
 
         for planet in planets:
+
             if planet == self:
                 continue
             radius = ((planet.x - self._x)**2 + (planet.y - self._y)**2)**0.5
             if radius < 10**-6:
                 radius = 10**-6
             aMag = G*planet.mass/radius**2
-            vMag = ((planet.vx - self._vx)**2 + (planet.vy - self._vy)**2)**0.5
-
-            # Poor Clumping Implementation
-
-            # Can fix by adding circle collision and the associated force (equal to whatever gravity can provide, so zero accel)
-
-            # Momentum summation for collisions should be considered
-
-            if radius < self._dispRad * 2:
-                aMag = 0
-                newDist = self._dispRad * 2
-                #self._x = self._x + newDist * (planet.vx - self._vx)/vMag
-                #self._y = self._y + newDist * (planet.vy - self._vy)/vMag
-                self._vx = (planet.vx + self._vx)/2
-                self._vy = (planet.vy + self._vy)/2
 
             xPort = (planet.x - self._x) / radius
             yPort = (planet.y - self._y) / radius
-            axMag += aMag * xPort
-            ayMag += aMag * yPort
+            axp = aMag * xPort
+            ayp = aMag * yPort
+
+            if radius < self._dispRad * 2:
+                self._vx = (planet.vx * planet.mass + self._vx * self._mass)/(planet.mass + self._mass)
+                self._vy = (planet.vy * planet.mass + self._vy * self._mass)/(planet.mass + self._mass)
+                planet.vx = self._vx
+                planet.vy = self._vy
+                # self._ax = 0
+                # self._ay = 0
+                # planet._ax = 0
+                # planet._ay = 0
+            else:
+                axMag += axp
+                ayMag += ayp
 
         self._ax = axMag
         self._ay = ayMag
@@ -66,6 +71,7 @@ class Planet:
         self._x = self._x + stepSize * self._vx
         self._y = self._y + stepSize * self._vy
 
+    def updateAnimation(self):
         self.circleOne.x = self._x
         self.circleOne.y = self._y
 
@@ -100,6 +106,22 @@ class Planet:
     @vy.setter
     def vy(self, value):
         self._vy = value
+
+    @property
+    def ax(self):
+        return self._ax
+
+    @ax.setter
+    def ax(self, value):
+        self._ax = value
+
+    @property
+    def ay(self):
+        return self._ay
+
+    @ay.setter
+    def ay(self, value):
+        self._ay = value
 
     @property
     def mass(self):
