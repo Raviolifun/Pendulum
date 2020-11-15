@@ -86,21 +86,20 @@ main_batch = pyglet.graphics.Batch()
 # x0, y0, vx0, vy0, mass
 
 # Current *bug not really* is that they cannot have different k or c values
-n = 30
-k = 1000
+n = 40
+k = 400
 c = 2
 vxi = 0
 vyi = 0
 pos_x = 900
 pos_y = 500
-radius = 200
+radius = 400
 m = 20/n
 
 SpringPoints = [None]*n
 SpringPoints[n - 1] = SpringPoint.SpringPoint(pos_x, pos_y, vxi, vyi, m, k, c, n, color1=(0, 255, 0), batch=main_batch)
 SpringPoints[n - 1].neighbors_index = range(n - 1)
 SpringPoints[n - 1].neighborsInitialDis = [radius] * (n - 1)
-print(SpringPoints[n-1].neighbors_index)
 
 angle_dif = 2*math.pi/(n-1)
 angle = 0
